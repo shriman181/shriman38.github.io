@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zypher — AI Grant Intelligence for Indian Nonprofits</title>
+<link rel="preconnect" href="https://unpkg.com">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/playfair-display/400.css">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/playfair-display/500.css">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/playfair-display/700.css">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/playfair-display/400-italic.css">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/dm-sans/400.css">
+<link rel="stylesheet" href="https://unpkg.com/@fontsource/dm-sans/500.css">
+<style>
+:root{
+  --cr:#F6F1E3;--cr2:#EDE5CE;--cr3:#E2D8BF;
+  --fo:#1B3A27;--fm:#2E5E42;--fl:#3A7252;
+  --sg:#5A8C6A;--sp:#CEEBD6;
+  --go:#B47008;--gm:#D4980E;--gl:#F4E8C0;
+  --te:#A84830;--tl:#F0D4C8;
+  --am:#E8A014;
+  --bk:#181208;--bm:#3C3020;--bs:#6A5840;--bx:#9A8870;
+  --bd:rgba(24,18,8,0.1);--bg:rgba(180,112,8,0.22);
+  --sw:0 4px 20px rgba(180,112,8,0.1);--sd:0 12px 40px rgba(24,18,8,0.1);
+  --r:12px;--rl:20px;
+  --ff:"Playfair Display",Georgia,"Times New Roman",serif;
+  --fs:"DM Sans",-apple-system,system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fs);background:var(--cr);color:var(--bk);font-size:16px;line-height:1.65;overflow-x:hidden;}
+
+/* Lined paper texture */
+body::after{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(180deg,transparent 0,transparent 31px,rgba(24,18,8,0.028) 31px,rgba(24,18,8,0.028) 32px);pointer-events:none;z-index:0;}
+body>*{position:relative;z-index:1;}
+
+/* ─── TICKER ─── */
+.ticker{background:var(--fo);color:rgba(232,245,236,0.75);font-size:13px;padding:9px 0;text-align:center;letter-spacing:0.015em;}
+.ticker b{color:var(--gm);font-weight:600;}
+.ticker-wrap{display:inline-flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;}
+.ticker-sep{opacity:0.3;}
+
+/* ─── NAV ─── */
+nav{position:sticky;top:0;z-index:100;background:rgba(246,241,227,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:66px;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:34px;height:34px;background:var(--fo);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-text{font-family:var(--ff);font-size:22px;font-weight:700;color:var(--fo);letter-spacing:-0.02em;}
+.nav-links{display:flex;gap:30px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--bs);font-size:14px;transition:color .2s;}
+.nav-links a:hover{color:var(--fo);}
+.btn-nav{background:var(--fo);color:#E0F0E4;border:none;padding:10px 22px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs);transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-nav:hover{background:var(--fm);transform:translateY(-1px);box-shadow:var(--sw);}
+
+/* ─── HERO ─── */
+.hero{min-height:90vh;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 52px;overflow:hidden;position:relative;}
+#particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;pointer-events:none;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(0) rotate(0deg);opacity:0;}10%{opacity:1;}90%{opacity:0.5;}100%{transform:translateY(-110vh) rotate(360deg);opacity:0;}}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gl);border:1px solid var(--bg);border-radius:100px;padding:6px 15px;font-size:13px;color:var(--go);font-weight:500;margin-bottom:24px;}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--go);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:0.65;}}
+
+h1.hero-h{font-family:var(--ff);font-size:clamp(36px,4.2vw,56px);line-height:1.1;font-weight:700;color:var(--fo);margin-bottom:22px;letter-spacing:-0.025em;}
+h1.hero-h em{font-style:italic;color:var(--te);position:relative;}
+h1.hero-h em::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:2.5px;background:var(--te);border-radius:2px;opacity:0.35;}
+
+.hero-sub{font-size:17px;line-height:1.75;color:var(--bm);margin-bottom:36px;max-width:490px;}
+.hero-actions{display:flex;gap:14px;margin-bottom:44px;flex-wrap:wrap;}
+
+.btn-p{background:var(--fo);color:#DFF0E4;padding:14px 28px;border-radius:var(--r);font-size:15px;font-weight:500;text-decoration:none;display:inline-block;transition:all .2s;border:none;cursor:pointer;font-family:var(--fs);position:relative;overflow:hidden;}
+.btn-p:hover{background:var(--fm);transform:translateY(-2px);box-shadow:var(--sw);}
+.btn-s{color:var(--fo);padding:14px 22px;border-radius:var(--r);font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--bd);transition:all .2s;background:transparent;cursor:pointer;font-family:var(--fs);}
+.btn-s:hover{border-color:var(--fo);background:rgba(27,58,39,0.05);}
+
+.hero-trust{display:flex;gap:30px;flex-wrap:wrap;}
+.trust-item{display:flex;flex-direction:column;}
+.trust-n{font-family:var(--ff);font-size:26px;font-weight:700;color:var(--fo);line-height:1;}
+.trust-l{font-size:12px;color:var(--bs);margin-top:3px;letter-spacing:0.02em;}
+
+/* Journey card */
+.journey-card{background:white;border:1px solid var(--bd);border-radius:var(--rl);padding:32px;max-width:460px;margin-left:auto;box-shadow:var(--sd);}
+.journey-t{font-family:var(--ff);font-size:17px;font-weight:600;color:var(--fo);margin-bottom:24px;text-align:center;}
+.j-step{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:var(--r);margin-bottom:6px;border:1px solid transparent;transition:all .35s;}
+.j-step.done{background:var(--gl);border-color:rgba(180,112,8,0.2);}
+.j-step.active{background:var(--sp);border-color:rgba(90,140,106,0.3);}
+.j-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;background:var(--cr2);transition:all .35s;}
+.j-step.done .j-icon{background:var(--go);color:white;}
+.j-step.active .j-icon{background:var(--sg);color:white;}
+.j-name{font-size:14px;font-weight:500;color:var(--bk);line-height:1.3;}
+.j-det{font-size:12px;color:var(--bs);margin-top:2px;}
+.j-stat{font-size:13px;font-weight:600;color:var(--bm);text-align:right;margin-left:auto;white-space:nowrap;}
+.j-step.done .j-stat{color:var(--go);}
+.j-step.active .j-stat{color:var(--sg);}
+.j-arr{width:1px;height:14px;background:var(--bd);margin:0 auto 6px;position:relative;}
+.j-arr::after{content:'';position:absolute;bottom:-5px;left:-3px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--bd);}
+
+/* ─── LOGOS ─── */
+.logos{padding:24px 52px;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.35);}
+.logos-l{font-size:11.5px;color:var(--bx);letter-spacing:0.09em;text-transform:uppercase;text-align:center;margin-bottom:14px;}
+.logos-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.l-pill{background:var(--cr2);border:1px solid var(--bd);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:500;color:var(--bm);white-space:nowrap;}
+
+/* ─── SECTIONS ─── */
+section{padding:88px 52px;}
+.sec-lbl{font-size:11.5px;letter-spacing:0.11em;text-transform:uppercase;color:var(--sg);font-weight:600;margin-bottom:12px;}
+.sec-h{font-family:var(--ff);font-size:clamp(28px,3.2vw,44px);font-weight:700;line-height:1.12;color:var(--fo);letter-spacing:-0.02em;margin-bottom:16px;}
+.sec-h em{font-style:italic;color:var(--te);}
+.sec-sub{font-size:16px;color:var(--bm);line-height:1.75;max-width:560px;}
+.sec-center{text-align:center;}
+.sec-center .sec-sub{margin:0 auto;}
+
+/* ─── PROBLEM ─── */
+.problem{background:var(--fo);}
+.problem .sec-lbl{color:var(--sg);}
+.problem .sec-h{color:#EEF5EE;}
+.problem .sec-h em{color:var(--gm);}
+.problem .sec-sub{color:rgba(238,245,238,0.62);}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px;}
+.pain-card{background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.1);border-radius:var(--rl);padding:28px;transition:all .3s;}
+.pain-card:hover{background:rgba(255,255,255,0.09);transform:translateY(-4px);}
+.pain-ico{width:46px;height:46px;background:rgba(90,140,106,0.22);border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:22px;}
+.pain-t{font-family:var(--ff);font-size:18px;font-weight:600;color:#EEF5EE;margin-bottom:10px;line-height:1.3;}
+.pain-d{font-size:14px;color:rgba(238,245,238,0.6);line-height:1.68;margin-bottom:16px;}
+.pain-stat{font-size:13px;color:var(--gm);font-weight:500;padding:5px 12px;background:rgba(212,152,14,0.16);border-radius:100px;display:inline-block;}
+
+/* ─── MODULES ─── */
+.modules-sect{background:white;}
+.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+.mod-row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:66.8%;margin:0 auto;}
+.mod-card{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:26px;transition:all .3s;cursor:default;position:relative;overflow:hidden;}
+.mod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.mc-green::before{background:var(--sg);}
+.mc-gold::before{background:var(--go);}
+.mc-terra::before{background:var(--te);}
+.mc-blue::before{background:#3A7BC8;}
+.mc-amb::before{background:var(--am);}
+.mod-card:hover{transform:translateY(-4px);box-shadow:var(--sd);border-color:rgba(180,112,8,0.25);}
+.mod-tag{font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.mt-green{color:var(--sg);}
+.mt-gold{color:var(--go);}
+.mt-terra{color:var(--te);}
+.mt-blue{color:#3A7BC8;}
+.mt-amb{color:var(--am);}
+.trojan{display:inline-flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--bg);border-radius:100px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--go);margin-bottom:8px;}
+.mod-name{font-family:var(--ff);font-size:20px;font-weight:700;color:var(--fo);margin-bottom:10px;}
+.mod-desc{font-size:14px;color:var(--bs);line-height:1.68;margin-bottom:14px;}
+.mod-kpi{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--bm);}
+.kpi-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ─── HOW ─── */
+.how{background:var(--cr2);}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px;position:relative;}
+.steps::before{content:'';position:absolute;top:27px;left:14%;right:14%;height:1px;background:repeating-linear-gradient(90deg,var(--bd) 0,var(--bd) 6px,transparent 6px,transparent 14px);}
+.step-box{background:white;border:1px solid var(--bd);border-radius:var(--rl);padding:28px 22px;text-align:center;}
+.step-num{width:54px;height:54px;border-radius:50%;background:var(--fo);color:#DFF0E4;font-family:var(--ff);font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative;z-index:2;}
+.step-t{font-family:var(--ff);font-size:18px;font-weight:600;color:var(--fo);margin-bottom:10px;}
+.step-d{font-size:14px;color:var(--bs);line-height:1.68;}
+
+/* ─── STATS ─── */
+.stats{background:var(--fm);padding:68px 52px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center;}
+.stat-c{padding:0 20px;}
+.stat-c+.stat-c{border-left:1px solid rgba(255,255,255,0.1);}
+.stat-n{font-family:var(--ff);font-size:50px;font-weight:700;color:#E8F5EC;line-height:1;display:block;margin-bottom:8px;}
+.stat-l{font-size:14px;color:rgba(232,245,236,0.55);}
+
+/* ─── FOUNDER ─── */
+.founder{background:white;}
+.founder-wrap{display:grid;grid-template-columns:380px 1fr;gap:80px;align-items:center;max-width:1040px;margin:0 auto;}
+.f-card{background:var(--cr);border:1px solid var(--bg);border-radius:24px;padding:40px;text-align:center;position:relative;}
+.f-card::before{content:'';position:absolute;inset:-1px;border-radius:24px;background:linear-gradient(135deg,rgba(180,112,8,0.28),transparent 55%,rgba(90,140,106,0.18));z-index:0;pointer-events:none;}
+.f-card>*{position:relative;z-index:1;}
+.f-avatar{width:96px;height:96px;border-radius:50%;background:var(--fo);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-family:var(--ff);font-size:34px;font-weight:700;color:#DFF0E4;border:4px solid var(--cr);box-shadow:0 0 0 2px var(--bg);}
+.f-name{font-family:var(--ff);font-size:24px;font-weight:700;color:var(--fo);margin-bottom:4px;}
+.f-title{font-size:13px;color:var(--bs);margin-bottom:22px;}
+.f-quote{font-family:var(--ff);font-style:italic;font-size:15px;color:var(--bm);line-height:1.75;position:relative;padding:0 6px;}
+.f-quote::before{content:'\201C';font-size:60px;color:var(--gl);position:absolute;top:-18px;left:-10px;font-family:var(--ff);line-height:1;z-index:-1;}
+.f-socials{display:flex;gap:10px;justify-content:center;margin-top:22px;}
+.f-soc{width:36px;height:36px;border:1px solid var(--bd);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--bm);text-decoration:none;font-size:14px;transition:all .2s;background:white;}
+.f-soc:hover{background:var(--fo);color:#DFF0E4;border-color:var(--fo);}
+.f-story{font-size:15.5px;color:var(--bm);line-height:1.8;margin-bottom:18px;}
+.f-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+.f-tag{padding:5px 14px;background:var(--cr);border:1px solid var(--bd);border-radius:100px;font-size:13px;color:var(--bm);}
+
+/* ─── TESTIMONIALS ─── */
+.testi-sect{background:var(--cr2);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.t-card{background:white;border:1px solid var(--bd);border-radius:var(--rl);padding:28px;transition:all .3s;}
+.t-card:hover{transform:translateY(-4px);box-shadow:var(--sw);}
+.t-stars{color:var(--go);font-size:15px;letter-spacing:2px;margin-bottom:14px;}
+.t-text{font-family:var(--ff);font-style:italic;font-size:15.5px;color:var(--bm);line-height:1.75;margin-bottom:20px;}
+.t-author{display:flex;align-items:center;gap:12px;}
+.t-ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;}
+.t-name{font-size:14px;font-weight:500;color:var(--bk);}
+.t-role{font-size:12px;color:var(--bs);}
+
+/* ─── PRICING ─── */
+.pricing-sect{background:white;}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:980px;margin:0 auto;}
+.p-card{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:32px;position:relative;transition:all .3s;}
+.p-card:hover{transform:translateY(-4px);box-shadow:var(--sd);}
+.p-card.featured{background:var(--fo);border-color:var(--fo);}
+.p-pop{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--go);color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;letter-spacing:.05em;white-space:nowrap;}
+.p-tier{font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:7px;color:var(--sg);}
+.p-card.featured .p-tier{color:var(--sg);}
+.p-name{font-family:var(--ff);font-size:24px;font-weight:700;color:var(--fo);margin-bottom:7px;}
+.p-card.featured .p-name{color:#E8F5EC;}
+.p-desc{font-size:13px;color:var(--bs);margin-bottom:22px;line-height:1.55;}
+.p-card.featured .p-desc{color:rgba(232,245,236,0.6);}
+.p-amt{font-family:var(--ff);font-size:40px;font-weight:700;color:var(--fo);line-height:1;}
+.p-card.featured .p-amt{color:#E8F5EC;}
+.p-per{font-size:12px;color:var(--bs);margin-bottom:26px;margin-top:3px;}
+.p-card.featured .p-per{color:rgba(232,245,236,0.55);}
+.p-feats{list-style:none;margin-bottom:26px;}
+.p-feats li{font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:9px;color:var(--bm);line-height:1.45;}
+.p-card.featured .p-feats li{color:rgba(232,245,236,0.78);border-bottom-color:rgba(255,255,255,0.1);}
+.p-feats li::before{content:'✓';color:var(--sg);font-weight:700;flex-shrink:0;margin-top:1px;}
+.p-card.featured .p-feats li::before{color:var(--sg);}
+.p-btn{width:100%;padding:13px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs);text-align:center;border:1.5px solid var(--fo);background:transparent;color:var(--fo);display:block;text-decoration:none;transition:all .2s;}
+.p-btn:hover{background:var(--fo);color:#DFF0E4;}
+.p-card.featured .p-btn{background:var(--go);border-color:var(--go);color:white;}
+.p-card.featured .p-btn:hover{background:var(--gm);}
+
+/* ─── CTA ─── */
+.cta-sect{background:var(--cr2);text-align:center;padding:100px 52px;}
+.cta-sect .sec-sub{margin:0 auto 36px;}
+.cta-acts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* ─── FOOTER ─── */
+footer{background:var(--fo);padding:60px 52px 32px;}
+.footer-top{display:grid;grid-template-columns:300px 1fr 1fr 1fr;gap:52px;margin-bottom:48px;}
+.ft-brand{font-family:var(--ff);font-size:22px;font-weight:700;color:#E8F5EC;display:block;margin-bottom:14px;}
+.ft-tag{font-size:13.5px;line-height:1.7;color:rgba(232,245,236,0.5);margin-bottom:22px;}
+.fc-t{font-size:13px;font-weight:600;color:#E8F5EC;margin-bottom:16px;letter-spacing:0.05em;}
+.fc-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.fc-links a{font-size:13.5px;color:rgba(232,245,236,0.5);text-decoration:none;transition:color .2s;}
+.fc-links a:hover{color:#E8F5EC;}
+.footer-bot{border-top:1px solid rgba(255,255,255,0.1);padding-top:22px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:rgba(232,245,236,0.4);flex-wrap:wrap;gap:8px;}
+
+/* ─── REVEALS ─── */
+.rev{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease;}
+.rev.vis{opacity:1;transform:translateY(0);}
+
+/* ─── ORGANIC DIVIDERS ─── */
+.wave-dn{width:100%;overflow:hidden;line-height:0;margin-bottom:-1px;}
+.wave-dn svg{display:block;width:100%;}
+
+/* ─── GRANT TICKER ─── */
+.grant-ticker{background:var(--go);color:white;text-align:center;padding:10px;font-size:13.5px;font-weight:500;}
+.grant-ticker span{font-family:var(--ff);font-size:16px;font-weight:700;}
+
+/* Impact row band */
+.impact-band{background:var(--gl);border-top:1px solid rgba(180,112,8,0.2);border-bottom:1px solid rgba(180,112,8,0.2);padding:20px 52px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
+.ib-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--go);font-weight:500;}
+.ib-dot{width:8px;height:8px;border-radius:50%;background:var(--go);opacity:0.5;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:var(--cr);}
+::-webkit-scrollbar-thumb{background:var(--sg);border-radius:4px;}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:920px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero{grid-template-columns:1fr;padding:60px 22px;gap:40px;}
+  .hero-viz-wrap{display:none;}
+  section,.stats,.founder{padding:60px 22px;}
+  .pain-grid,.mod-grid,.testi-grid,.steps{grid-template-columns:1fr;}
+  .mod-row2{grid-template-columns:1fr;max-width:100%;}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:24px;}
+  .founder-wrap{grid-template-columns:1fr;gap:40px;}
+  .price-grid{grid-template-columns:1fr;max-width:400px;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px;}
+  .logos{padding:20px;}
+  .impact-band{gap:20px;padding:16px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER BAR -->
+<div class="ticker">
+  <div class="ticker-wrap">
+    <span><b id="tv">₹44.2L</b> in grants processed this week</span>
+    <span class="ticker-sep">·</span>
+    <span><b>230+</b> NGOs on the platform</span>
+    <span class="ticker-sep">·</span>
+    <span><b>94%</b> customer renewal rate</span>
+    <span class="ticker-sep">·</span>
+    <span>India's AI grant intelligence platform</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2.5C10 2.5 7 7 7 11.5C7 14.5 8.3 17.5 10 17.5C11.7 17.5 13 14.5 13 11.5C13 7 10 2.5 10 2.5Z" fill="#5A8C6A"/>
+        <path d="M10 11.5C10 11.5 5.5 9 3 11.5" stroke="#D4980E" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M10 11.5C10 11.5 14.5 9 17 11.5" stroke="#D4980E" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-text">Zypher</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#platform">Platform</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#founder">Our story</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <a href="#pricing" class="btn-nav">Start free pilot →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div id="particles"></div>
+
+  <div class="rev">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      India's first AI grant intelligence platform
+    </div>
+    <h1 class="hero-h">Every great cause deserves a <em>fighting chance</em> at funding.</h1>
+    <p class="hero-sub">Zypher is the AI operating system for Indian nonprofits — turning grant writing, impact reporting, and donor management from a 40-hour weekly burden into a 3-hour workflow.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-p">Start your free pilot ↗</a>
+      <button class="btn-s" onclick="document.getElementById('platform').scrollIntoView({behavior:'smooth'})">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M6 8l2 2 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        See how it works
+      </button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item"><span class="trust-n">200+</span><span class="trust-l">NGOs active</span></div>
+      <div class="trust-item"><span class="trust-n">₹42 Cr</span><span class="trust-l">Grants facilitated</span></div>
+      <div class="trust-item"><span class="trust-n">3.2×</span><span class="trust-l">Win rate lift</span></div>
+    </div>
+  </div>
+
+  <div class="hero-viz-wrap rev" style="transition-delay:.2s">
+    <div class="journey-card">
+      <div class="journey-t">Your grant journey with Zypher</div>
+      <div class="j-step done" id="js1">
+        <div class="j-icon">📋</div>
+        <div style="flex:1"><div class="j-name">Discover matched grants</div><div class="j-det">AI scans 2,400+ live calls</div></div>
+        <div class="j-stat" id="js1s">34 matches</div>
+      </div>
+      <div class="j-arr"></div>
+      <div class="j-step active" id="js2">
+        <div class="j-icon">✍️</div>
+        <div style="flex:1"><div class="j-name">AI drafts your application</div><div class="j-det">Tailored to each funder's language</div></div>
+        <div class="j-stat" id="js2s">Drafting…</div>
+      </div>
+      <div class="j-arr"></div>
+      <div class="j-step" id="js3">
+        <div class="j-icon">🏆</div>
+        <div style="flex:1"><div class="j-name">Win more grants</div><div class="j-det">Average +3.2× improvement</div></div>
+        <div class="j-stat" id="js3s">—</div>
+      </div>
+      <div class="j-arr"></div>
+      <div class="j-step" id="js4">
+        <div class="j-icon">📊</div>
+        <div style="flex:1"><div class="j-name">Auto-generate impact reports</div><div class="j-det">UCs, SROI, CSR reports</div></div>
+        <div class="j-stat" id="js4s">—</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE -->
+<div class="wave-dn" style="background:var(--cr)">
+  <svg viewBox="0 0 1440 48" preserveAspectRatio="none" style="height:48px">
+    <path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="rgba(255,255,255,0.38)"/>
+  </svg>
+</div>
+
+<!-- LOGOS -->
+<div class="logos">
+  <p class="logos-l">Trusted by nonprofits across India</p>
+  <div class="logos-row">
+    <span class="l-pill">Akanksha Foundation</span>
+    <span class="l-pill">Nudge Foundation</span>
+    <span class="l-pill">Smile Foundation</span>
+    <span class="l-pill">Magic Bus India</span>
+    <span class="l-pill">Antarang Foundation</span>
+    <span class="l-pill">Teach For India</span>
+  </div>
+</div>
+
+<!-- IMPACT BAND -->
+<div class="impact-band">
+  <div class="ib-item"><div class="ib-dot"></div>₹900 Cr in CSR grants go unclaimed every year</div>
+  <div class="ib-item"><div class="ib-dot"></div>15+ hours per grant application</div>
+  <div class="ib-item"><div class="ib-dot"></div>6,000+ NGOs lost FCRA licences since 2020</div>
+  <div class="ib-item"><div class="ib-dot"></div>Zypher fixes all three</div>
+</div>
+
+<!-- PROBLEM -->
+<section class="problem rev">
+  <div class="sec-center" style="margin-bottom:52px">
+    <div class="sec-lbl">The broken reality</div>
+    <h2 class="sec-h">Grant funding shouldn't require a <em>second full-time job.</em></h2>
+    <p class="sec-sub" style="margin:0 auto">India's 3.3 million nonprofits collectively lose ₹900 Cr in unclaimed CSR grants annually — not from lack of mission, but from lack of the right tools.</p>
+  </div>
+  <div class="pain-grid">
+    <div class="pain-card rev">
+      <div class="pain-ico">📝</div>
+      <div class="pain-t">15+ hours per grant application — that go nowhere</div>
+      <p class="pain-d">Programme officers spend 30–40% of their week on applications. 65% fail. That's ₹2.7L in wasted senior staff time per NGO every year, before accounting for the funding never won.</p>
+      <span class="pain-stat">₹2.7L/year wasted on failed applications</span>
+    </div>
+    <div class="pain-card rev" style="transition-delay:.1s">
+      <div class="pain-ico">📊</div>
+      <div class="pain-t">Impact reports built from memory and WhatsApp</div>
+      <p class="pain-d">Quarterly Utilisation Certificates take 8–12 hours each and lose renewal grants worth ₹15–40L because CSR managers can't verify the numbers — and stop funding NGOs that can't show proof.</p>
+      <span class="pain-stat">40% of renewals lost to poor reporting</span>
+    </div>
+    <div class="pain-card rev" style="transition-delay:.2s">
+      <div class="pain-ico">📉</div>
+      <div class="pain-t">20–30% annual donor churn — invisible until it's too late</div>
+      <p class="pain-d">No Indian nonprofit CRM has a churn prediction model. By the time a major donor goes silent, they've already decided to stop. Replacing them costs 7× as much as keeping them would have.</p>
+      <span class="pain-stat">7× cost to acquire vs retain</span>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE UP into modules -->
+<div class="wave-dn" style="background:var(--fo)">
+  <svg viewBox="0 0 1440 48" preserveAspectRatio="none" style="height:48px">
+    <path d="M0,0 C480,48 960,0 1440,0 L1440,48 L0,48 Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- MODULES -->
+<section class="modules-sect" id="platform">
+  <div class="sec-center rev" style="margin-bottom:56px">
+    <div class="sec-lbl">The platform</div>
+    <h2 class="sec-h">Five modules. One operating system<br>for your entire funding operation.</h2>
+    <p class="sec-sub">Every module shares your NGO's programme data — so the more you use Zypher, the smarter every output becomes.</p>
+  </div>
+  <div class="mod-grid">
+    <div class="mod-card mc-green rev">
+      <div class="trojan">★ Trojan horse module — fastest ROI</div>
+      <div class="mod-tag mt-green">Grant Compass</div>
+      <div class="mod-name">AI Grant Writing</div>
+      <p class="mod-desc">Scans 2,400+ live grant calls, ranks them by organisational fit, and drafts your entire application — calibrated to each funder's specific language and priorities. 15 hours → 90 minutes.</p>
+      <div class="mod-kpi"><div class="kpi-dot" style="background:var(--sg)"></div>Win rate lift: +18–25 percentage points</div>
+    </div>
+    <div class="mod-card mc-gold rev" style="transition-delay:.1s">
+      <div class="mod-tag mt-gold">ImpactLens</div>
+      <div class="mod-name">Impact Reporting</div>
+      <p class="mod-desc">Field data flows in via WhatsApp bot and mobile forms. Zypher auto-generates Utilisation Certificates, calculates SROI, and produces a live funder dashboard your CSR managers will actually read.</p>
+      <div class="mod-kpi"><div class="kpi-dot" style="background:var(--go)"></div>8 hours per UC → 90 minutes · BRSR-compatible</div>
+    </div>
+    <div class="mod-card mc-terra rev" style="transition-delay:.2s">
+      <div class="mod-tag mt-terra">DonorPulse</div>
+      <div class="mod-name">Donor Retention AI</div>
+      <p class="mod-desc">RFM-based churn prediction identifies donors about to lapse 80–90 days before they do. The next-best-action engine suggests the right message at the right moment — and drafts it.</p>
+      <div class="mod-kpi"><div class="kpi-dot" style="background:var(--te)"></div>+12–15pp donor retention · 80-day early warning</div>
+    </div>
+  </div>
+  <div class="mod-row2">
+    <div class="mod-card mc-blue rev" style="transition-delay:.3s">
+      <div class="mod-tag mt-blue">CSR Bridge</div>
+      <div class="mod-name">Funder Intelligence</div>
+      <p class="mod-desc">Tracks 500 corporate CSR programs continuously, detects strategy shifts in annual reports, and personalises your proposal to each funder's evolving priorities. Proposal-to-meeting conversion: 35% vs. 15% industry average.</p>
+      <div class="mod-kpi"><div class="kpi-dot" style="background:#3A7BC8"></div>500 corporates tracked live · strategy-matched proposals</div>
+    </div>
+    <div class="mod-card mc-amb rev" style="transition-delay:.4s">
+      <div class="mod-tag mt-amb">ComplianceGuard</div>
+      <div class="mod-name">FCRA Automation</div>
+      <p class="mod-desc">Auto-reconciles your FCRA bank account against PFMS disbursements weekly. Generates FC-4 draft returns. Flags anomalies before they become violations that cost you your licence.</p>
+      <div class="mod-kpi"><div class="kpi-dot" style="background:var(--am)"></div>FCRA compliance: 100 hours → 12 per year</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="sec-center rev">
+    <div class="sec-lbl">How it works</div>
+    <h2 class="sec-h">From signup to first grant draft in 48 hours</h2>
+    <p class="sec-sub" style="margin:0 auto">No data migration. No lengthy implementation. Your first matched grant list is ready within two days.</p>
+  </div>
+  <div class="steps">
+    <div class="step-box rev">
+      <div class="step-num">1</div>
+      <div class="step-t">Upload your story</div>
+      <p class="step-d">Upload your last annual report and complete a 15-minute onboarding questionnaire. Zypher builds your complete programme profile — sectors, geographies, beneficiaries, impact data.</p>
+    </div>
+    <div class="step-box rev" style="transition-delay:.15s">
+      <div class="step-num">2</div>
+      <div class="step-t">Intelligence activates</div>
+      <p class="step-d">Grant Compass ranks 2,400+ live opportunities by fit. ImpactLens begins collecting field data. DonorPulse analyses your donation history. ComplianceGuard maps your FCRA status — all in parallel.</p>
+    </div>
+    <div class="step-box rev" style="transition-delay:.3s">
+      <div class="step-num">3</div>
+      <div class="step-t">Win more, report less</div>
+      <p class="step-d">Submit more applications in less time. Win more grants. Auto-generate compliant impact reports. Keep donors engaged. Stay FCRA-compliant without the quarterly panic. Focus on mission.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats rev">
+  <div class="stats-grid">
+    <div class="stat-c">
+      <span class="stat-n" data-target="230" data-suffix="+">0</span>
+      <span class="stat-l">NGOs on the platform</span>
+    </div>
+    <div class="stat-c">
+      <span class="stat-n" data-prefix="₹" data-target="42" data-suffix=" Cr">₹0</span>
+      <span class="stat-l">In grants facilitated</span>
+    </div>
+    <div class="stat-c">
+      <span class="stat-n" data-target="94" data-suffix="%">0%</span>
+      <span class="stat-l">Customer renewal rate</span>
+    </div>
+    <div class="stat-c">
+      <span class="stat-n" data-prefix="" data-target="32" data-suffix="×" data-divide="10">0×</span>
+      <span class="stat-l">Average win rate lift</span>
+    </div>
+  </div>
+</div>
+
+<!-- WAVE into founder -->
+<div class="wave-dn" style="background:var(--fm)">
+  <svg viewBox="0 0 1440 48" preserveAspectRatio="none" style="height:48px">
+    <path d="M0,48 C480,0 960,48 1440,48 L1440,0 L0,0 Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- FOUNDER -->
+<section class="founder" id="founder">
+  <div class="founder-wrap">
+    <div class="f-card rev">
+      <div class="f-avatar">AG</div>
+      <div class="f-name">Ashwar Gupta</div>
+      <div class="f-title">Founder &amp; CEO, Zypher</div>
+      <p class="f-quote">I watched programme officers — brilliant people with genuine mission — spending their best hours writing the same grant paragraph for the tenth time. That felt like the wrong use of human intelligence.</p>
+      <div class="f-socials">
+        <a href="#" class="f-soc" title="LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.146C0 .514.53 0 1.175 0h13.65C15.47 0 16 .513 16 1.146v13.708c0 .633-.53 1.146-1.175 1.146H1.175C.53 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></svg>
+        </a>
+        <a href="#" class="f-soc" title="X / Twitter">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg>
+        </a>
+        <a href="mailto:ashwar@zypher.in" class="f-soc" title="Email">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="rev" style="transition-delay:.2s">
+      <div class="sec-lbl">From the founder</div>
+      <h2 class="sec-h" style="font-size:clamp(26px,2.8vw,38px)">Built from the inside<br>of the problem</h2>
+      <p class="f-story">Before Zypher, Ashwar spent three years working at the intersection of corporate CSR and grassroots nonprofits — first as a consultant advising CSR programs, then embedded with two Tier-2 city NGOs helping them with their grant pipelines.</p>
+      <p class="f-story">What he saw wasn't a funding shortage. It was an intelligence gap. Every tool available to NGOs was either too expensive for sub-₹5 Cr organisations, built for American fundraising patterns, or simply a record-keeping system dressed up as an intelligence platform.</p>
+      <p class="f-story">Zypher was built to fix the specific thing that frustrates every programme officer in India: spending 40% of your week on administrative work instead of the mission you signed up for. Every feature traces back to a real conversation, a real person, a real broken workflow.</p>
+      <div class="f-tags">
+        <span class="f-tag">Ex-CSR consultant</span>
+        <span class="f-tag">3 years embedded with NGOs</span>
+        <span class="f-tag">BITS Pilani</span>
+        <span class="f-tag">Impact-first builder</span>
+        <span class="f-tag">YC Startup School 2026</span>
+        <span class="f-tag">Mumbai</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-sect" id="testimonials">
+  <div class="sec-center rev" style="margin-bottom:52px">
+    <div class="sec-lbl">What nonprofits say</div>
+    <h2 class="sec-h">The teams who use it every week</h2>
+    <p class="sec-sub" style="margin:0 auto">From small trusts to major implementation agencies. What changes is the scale — not the relief.</p>
+  </div>
+  <div class="testi-grid">
+    <div class="t-card rev">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"We went from 6 grants won per year to 11 in the first eight months. Grant Compass didn't just find better grants — it helped us understand why our applications were failing. Genuinely game-changing."</p>
+      <div class="t-author">
+        <div class="t-ava" style="background:#CEEBD6;color:#2E5E42">RK</div>
+        <div><div class="t-name">Riya Krishnamurthy</div><div class="t-role">Executive Director, Antarang Foundation, Mumbai</div></div>
+      </div>
+    </div>
+    <div class="t-card rev" style="transition-delay:.1s">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"Our quarterly UC used to take me 10 hours. Now ImpactLens generates a 90% complete draft in 20 minutes. Our CSR manager told me it's the best impact report he receives from any of their grantees."</p>
+      <div class="t-author">
+        <div class="t-ava" style="background:#F4E8C0;color:#B47008">PS</div>
+        <div><div class="t-name">Priya Sharma</div><div class="t-role">Programme Officer, Health NGO, Pune</div></div>
+      </div>
+    </div>
+    <div class="t-card rev" style="transition-delay:.2s">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"ComplianceGuard caught a PFMS reconciliation error we'd been making for two quarters. If that had made it into our FC-4 filing we could have faced licence suspension. That one catch paid for three years of Zypher."</p>
+      <div class="t-author">
+        <div class="t-ava" style="background:#F0D4C8;color:#A84830">MV</div>
+        <div><div class="t-name">Mohan Venkatesh</div><div class="t-role">Finance Director, Livelihoods Trust, Bengaluru</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-sect" id="pricing">
+  <div class="sec-center rev" style="margin-bottom:56px">
+    <div class="sec-lbl">Pricing</div>
+    <h2 class="sec-h">One additional grant covers years of Zypher</h2>
+    <p class="sec-sub" style="margin:0 auto">Designed for nonprofits, not enterprise SaaS budgets. Every plan includes a 30-day free pilot on Grant Compass — no credit card required.</p>
+  </div>
+  <div class="price-grid">
+    <div class="p-card rev">
+      <div class="p-tier">Beej · Seed</div>
+      <div class="p-name">Starter</div>
+      <p class="p-desc">For small NGOs under ₹1 Cr budget taking their first step into AI grant writing</p>
+      <div class="p-amt">₹7,500</div>
+      <div class="p-per">per month · billed annually</div>
+      <ul class="p-feats">
+        <li>Grant Compass (20 applications/yr)</li>
+        <li>AI-matched grant discovery</li>
+        <li>Application drafts &amp; deadline calendar</li>
+        <li>Win probability scoring</li>
+        <li>Email support</li>
+      </ul>
+      <a href="#" class="p-btn">Start free pilot</a>
+    </div>
+    <div class="p-card featured rev" style="transition-delay:.1s">
+      <div class="p-pop">Most popular</div>
+      <div class="p-tier">Pragati · Growth</div>
+      <div class="p-name">Professional</div>
+      <p class="p-desc">For growing NGOs with ₹1–10 Cr budgets ready to professionalise their funding operation</p>
+      <div class="p-amt">₹25,000</div>
+      <div class="p-per">per month · billed annually</div>
+      <ul class="p-feats">
+        <li>Everything in Starter</li>
+        <li>ImpactLens — full impact reporting</li>
+        <li>DonorPulse churn prediction</li>
+        <li>SROI auto-calculation</li>
+        <li>WhatsApp field data bot</li>
+        <li>Dedicated customer success manager</li>
+      </ul>
+      <a href="#" class="p-btn">Start free pilot</a>
+    </div>
+    <div class="p-card rev" style="transition-delay:.2s">
+      <div class="p-tier">Shakti · Impact</div>
+      <div class="p-name">Enterprise</div>
+      <p class="p-desc">For large NGOs, foundations, and implementation agencies with complex multi-funder operations</p>
+      <div class="p-amt">₹75,000</div>
+      <div class="p-per">per month · billed annually</div>
+      <ul class="p-feats">
+        <li>Everything in Professional</li>
+        <li>CSR Bridge — funder intelligence</li>
+        <li>ComplianceGuard FCRA automation</li>
+        <li>CSR manager microsite</li>
+        <li>Custom impact framework</li>
+        <li>Priority phone support</li>
+      </ul>
+      <a href="#" class="p-btn">Contact us</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sect">
+  <div class="rev">
+    <div class="sec-lbl" style="justify-content:center;display:flex">Get started</div>
+    <h2 class="sec-h" style="max-width:580px;margin:0 auto 16px">Your next grant application<br>could be your best one yet.</h2>
+    <p class="sec-sub">Start a free 30-day pilot on Grant Compass — one real application, no data migration, no contract. If you don't love the draft, you owe us nothing.</p>
+    <div class="cta-acts">
+      <a href="#" class="btn-p" style="padding:16px 34px;font-size:16px">Start free pilot — no credit card →</a>
+      <button class="btn-s" style="padding:16px 24px;font-size:15px">Talk to Ashwar directly</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <span class="ft-brand">Zypher</span>
+      <p class="ft-tag">The AI operating system for Indian nonprofits. Grant writing, impact reporting, and donor intelligence — in one platform built for India's regulatory context.</p>
+      <p style="font-size:13px;color:rgba(232,245,236,0.35)">Mumbai · Delhi · Bengaluru</p>
+    </div>
+    <div>
+      <p class="fc-t">Platform</p>
+      <ul class="fc-links">
+        <li><a href="#">Grant Compass</a></li>
+        <li><a href="#">ImpactLens</a></li>
+        <li><a href="#">DonorPulse</a></li>
+        <li><a href="#">CSR Bridge</a></li>
+        <li><a href="#">ComplianceGuard</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="fc-t">Company</p>
+      <ul class="fc-links">
+        <li><a href="#">About Zypher</a></li>
+        <li><a href="#">Founder — Ashwar Gupta</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="fc-t">Resources</p>
+      <ul class="fc-links">
+        <li><a href="#">India Grant Intelligence Report 2026</a></li>
+        <li><a href="#">FCRA Compliance Guide</a></li>
+        <li><a href="#">Weekly Grant Alert</a></li>
+        <li><a href="#">Privacy policy</a></li>
+        <li><a href="#">ashwar@zypher.in</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 Zypher Technologies Pvt. Ltd. · Built for India's nonprofits.</span>
+    <span>Founded by Ashwar Gupta · Backed by impact.</span>
+  </div>
+</footer>
+
+<script>
+// ─── PARTICLES ───
+(function(){
+  const c=document.getElementById('particles');
+  if(!c)return;
+  const cols=['#5A8C6A','#B47008','#A84830','#3A7252','#D4980E','#CEEBD6'];
+  for(let i=0;i<32;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const sz=Math.random()*5+2.5;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${Math.random()*15-5}%;background:${cols[Math.floor(Math.random()*cols.length)]};opacity:${0.18+Math.random()*0.35};animation-duration:${9+Math.random()*16}s;animation-delay:${Math.random()*14}s;`;
+    c.appendChild(p);
+  }
+})();
+
+// ─── JOURNEY ANIMATION ───
+(function(){
+  const seqs=[
+    [{id:'js1',c:'done'},{id:'js2',c:'active'},{id:'js3',c:''},{id:'js4',c:''}],
+    [{id:'js1',c:'done'},{id:'js2',c:'done'},{id:'js3',c:'active'},{id:'js4',c:''}],
+    [{id:'js1',c:'done'},{id:'js2',c:'done'},{id:'js3',c:'done'},{id:'js4',c:'active'}],
+    [{id:'js1',c:'done'},{id:'js2',c:'done'},{id:'js3',c:'done'},{id:'js4',c:'done'}]
+  ];
+  const stats=[
+    ['34 matches','Drafting…','—','—'],
+    ['34 matches','3 drafts ready','Submitting…','—'],
+    ['34 matches','3 sent','2 shortlisted','Reporting…'],
+    ['34 matches','3 sent','2 won ✓','Report ready ✓']
+  ];
+  let s=0;
+  function apply(n){
+    seqs[n].forEach(item=>{
+      const el=document.getElementById(item.id);
+      if(!el)return;
+      el.classList.remove('active','done');
+      if(item.c)el.classList.add(item.c);
+    });
+    ['js1s','js2s','js3s','js4s'].forEach((id,i)=>{
+      const el=document.getElementById(id);
+      if(el)el.textContent=stats[n][i];
+    });
+  }
+  setInterval(()=>{s=(s+1)%seqs.length;apply(s);},2400);
+})();
+
+// ─── COUNTER ANIMATION ───
+function animCount(el){
+  const tgt=parseInt(el.dataset.target);
+  const pre=el.dataset.prefix||'';
+  const suf=el.dataset.suffix||'';
+  const div=el.dataset.divide?parseFloat(el.dataset.divide):1;
+  const dur=1800;
+  let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    const prog=Math.min((ts-start)/dur,1);
+    const ease=1-Math.pow(1-prog,3);
+    const cur=Math.floor(ease*tgt);
+    el.textContent=pre+(cur/div).toFixed(div>1?1:0)+suf;
+    if(prog<1)requestAnimationFrame(step);
+    else el.textContent=pre+(tgt/div).toFixed(div>1?1:0)+suf;
+  }
+  requestAnimationFrame(step);
+}
+
+// ─── INTERSECTION OBSERVER (reveals + counters) ───
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('vis');
+    e.target.querySelectorAll&&e.target.querySelectorAll('[data-target]').forEach(animCount);
+    if(e.target.dataset&&e.target.dataset.target)animCount(e.target);
+    obs.unobserve(e.target);
+  });
+},{threshold:0.14});
+
+document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
+document.querySelectorAll('[data-target]').forEach(el=>obs.observe(el));
+
+// ─── TICKER INCREMENT ───
+(function(){
+  const el=document.getElementById('tv');
+  if(!el)return;
+  let v=442;
+  setInterval(()=>{
+    v+=Math.floor(Math.random()*4+1);
+    el.textContent='₹'+(v/10).toFixed(1)+'L';
+  },4500);
+})();
+
+// ─── RIPPLE ON BUTTONS ───
+document.querySelectorAll('.btn-p,.btn-nav').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    const r=document.createElement('span');
+    const rect=btn.getBoundingClientRect();
+    const sz=Math.max(rect.width,rect.height);
+    r.style.cssText=`position:absolute;border-radius:50%;width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px;background:rgba(255,255,255,0.22);transform:scale(0);animation:ripple .55s ease-out forwards;pointer-events:none;`;
+    btn.appendChild(r);
+    setTimeout(()=>r.remove(),600);
+  });
+});
+const rs=document.createElement('style');
+rs.textContent='@keyframes ripple{to{transform:scale(2.8);opacity:0}}';
+document.head.appendChild(rs);
+
+// ─── SMOOTH NAV SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    const id=this.getAttribute('href').slice(1);
+    const target=document.getElementById(id);
+    if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+</script>
+</body>
+</html>
